@@ -100,6 +100,14 @@ class mat4 {
             }
             return vec4(res[0], res[1], res[2], res[3]);
         }
+
+        static mat4 reflection(bool reflect_x, bool reflect_y, bool reflect_z) {
+            mat4 mat; // Identidade
+            if (reflect_x) mat[0][0] = -1;
+            if (reflect_y) mat[1][1] = -1;
+            if (reflect_z) mat[2][2] = -1;
+            return mat;
+        }
         
         // Inversa (Simplificada ou Geral)
         // Para Ray Tracing, precisamos da inversa para trazer o Raio do Mundo para o Espaço do Objeto.

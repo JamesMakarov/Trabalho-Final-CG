@@ -20,7 +20,7 @@ class triangle : public hittable {
             vec3 pvec = cross(r.direction(), v0v2);
             double det = dot(v0v1, pvec);
 
-            if (fabs(det) < 1e-8) return false; // Raio paralelo ao plano
+            if (fabs(det) < 1e-8) return false; 
             double invDet = 1.0 / det;
 
             vec3 tvec = r.origin() - v0;
@@ -45,7 +45,7 @@ class triangle : public hittable {
         }
 };
 
-// Uma caixa feita de triângulos (Malha)
+// Caixa completa (6 faces, 12 triângulos)
 class box_mesh : public hittable_list {
     public:
         box_mesh(const point3& p0, const point3& p1, shared_ptr<material> ptr) {
@@ -56,16 +56,29 @@ class box_mesh : public hittable_list {
             vec3 dy(0, max.y()-min.y(), 0);
             vec3 dz(0, 0, max.z()-min.z());
 
-            // Frente
-            add(make_shared<triangle>(min, min+dx, min+dy, ptr));
-            add(make_shared<triangle>(min+dx, min+dx+dy, min+dy, ptr));
-            // Trás ... e assim por diante para os 6 lados. 
-            // Simplificado: Adicionando faces frontais e laterais
-            // Para "Malha", um objeto complexo feito de tris é suficiente.
-            
-            // Topo (exemplo)
-            add(make_shared<triangle>(min+dy, min+dy+dx, min+dy+dz, ptr));
-            add(make_shared<triangle>(min+dy+dx, min+dy+dx+dz, min+dy+dz, ptr));
+            // Frente (Z normal +)
+            add(make_shared<triangle>(min,           min+dx,      min+dy,      ptr));
+            add(make_shared<triangle>(min+dx,        min+dx+dy,   min+dy,      ptr));
+
+            // Trás (Z normal -)
+            add(make_shared<triangle>(min+dx+dz,     min+dz,      min+dx+dy+dz, ptr));
+            add(make_shared<triangle>(min+dz,        min+dy+dz,   min+dx+dy+dz, ptr));
+
+            // Topo (Y normal +)
+            add(make_shared<triangle>(min+dy,        min+dy+dx,   min+dy+dz,    ptr));
+            add(make_shared<triangle>(min+dy+dx,     min+dy+dx+dz,min+dy+dz,    ptr));
+
+            // Fundo (Y normal -)
+            add(make_shared<triangle>(min,           min+dz,      min+dx,       ptr));
+            add(make_shared<triangle>(min+dx,        min+dz,      min+dx+dz,    ptr));
+
+            // Esquerda (X normal -)
+            add(make_shared<triangle>(min,           min+dy,      min+dz,       ptr));
+            add(make_shared<triangle>(min+dz,        min+dy,      min+dy+dz,    ptr));
+
+            // Direita (X normal +)
+            add(make_shared<triangle>(min+dx+dz,     min+dy+dx+dz, min+dx,      ptr));
+            add(make_shared<triangle>(min+dx,        min+dy+dx+dz, min+dy+dx,   ptr));
         }
 };
 
